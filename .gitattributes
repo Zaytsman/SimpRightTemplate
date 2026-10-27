@@ -1,0 +1,4 @@
+# Text files are stored with LF in the repository, whatever the contributor's core.autocrlf, so a core file compares
+# equal with the template's on every machine. Shell scripts keep LF in the working tree too: they run on Linux runners.
+* text=auto
+*.sh text eol=lf
