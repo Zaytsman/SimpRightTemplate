@@ -1,12 +1,11 @@
-# yaml-language-server: $schema=./simpright.schema.json
+# yaml-language-server: $schema=./node_modules/simpright/simpright.schema.json
 #
-# The project's toolchain config: what the scripts and the QA agents need to know about this project.
-# scripts/validate-scenarios.mts reads it and checks that every path below exists. Tests never read it: their config is
-# src/envs/<ENV>.json and .env.
+# The project's toolchain config: what the SimpRight Kit's commands and the QA agents need to know about this project.
+# npm run doctor checks that every path below exists. Tests never read it: their config is src/envs/<ENV>.json and .env.
 # It holds facts and pointers, not conventions: those stay in the files listed under project.conventions, and the
 # exemplars show the style to copy.
 
-template: v0.1.0                            # the SimpRightTemplate version the core files (core.files) came from
+template: v0.2.0                            # the SimpRightTemplate version the core files (core.files) came from; npm run doctor compares them
 
 project:
   language: typescript
@@ -15,9 +14,9 @@ project:
 
 paths:
   scenarios: test-scenarios                 # <layer>/<area>/<name>.yml
-  scenarioSchema: test-scenarios/scenarios.schema.json
+  scenarioSchema: node_modules/@simpright/scenarios/schemas/scenarios.schema.json   # the formats are the kit's
   bugs: bugs                                # <ID>.yml, one per bug in the app under test (BUG-001.yml)
-  bugSchema: bugs/bug.schema.json
+  bugSchema: node_modules/@simpright/scenarios/schemas/bug.schema.json
   tests: tests                              # <layer>/<area>/<name>.spec.ts
   apiTests: tests/api
   uiTests: tests/ui
@@ -126,7 +125,7 @@ parts:
   inspector: true                           # commands.inspectUi
 
 # The framework's core: the files a project gets from the template and keeps generic. A core code file imports only
-# other core files, the seams and packages (validate:scenarios checks it); the app's code goes in the project's own files.
+# other core files, the seams and packages (npm run doctor checks it); the app's code goes in the project's own files.
 core:
   files:
     - src/config/env.ts                     # the environment config, the users, the roles (from the seam)

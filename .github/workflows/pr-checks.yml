@@ -1,7 +1,7 @@
 name: PR Checks
 
-# Static checks (the `verify` job): typecheck and scenario validation. A main branch ruleset can require it.
-# The tests run in tests.yml.
+# Static checks (the `verify` job): typecheck, scenario validation and the project's setup (simpright doctor).
+# A main branch ruleset can require it. The tests run in tests.yml.
 
 on:
   pull_request:
@@ -43,3 +43,9 @@ jobs:
 
       - name: Validate scenarios
         run: npm run validate:scenarios
+
+      # simpright.yml and its paths, the workflows' Node version and what the core files import. --offline leaves out
+      # the check of the core files against SimpRightTemplate: this repository is the template, its own reference. In a
+      # project made from it, drop --offline to compare the core with the template version simpright.yml records.
+      - name: Check the project's setup
+        run: npm run doctor -- --offline

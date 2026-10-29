@@ -19,12 +19,13 @@ The examples test the [Toolshop demo app](https://practicesoftwaretesting.com) l
 
 ## What you get
 
-- **The core**, 22 files listed under `core` in `simpright.yml`: the config and environments, `BaseClient` and `TokenService`, `BasePage`, `BaseComponent` and `BaseDialog`, the base fixtures (role, login, cleanup), assertion messages with masking, the HTTP checks and send helpers, `globalSetup`, the page inspector, `playwright.config.ts` and the framework's conventions (`docs/framework/conventions.md`). A core file imports only other core files, the two seams and packages, and the validator checks it.
+- **The core**, 22 files listed under `core` in `simpright.yml`: the config and environments, `BaseClient` and `TokenService`, `BasePage`, `BaseComponent` and `BaseDialog`, the base fixtures (role, login, cleanup), assertion messages with masking, the HTTP checks and send helpers, `globalSetup`, the page inspector, `playwright.config.ts` and the framework's conventions (`docs/framework/conventions.md`). A core file imports only other core files, the two seams and packages, and `npm run doctor` checks it.
 - **Two seams for your app:** `src/config/project.ts` (the test-id attribute, the login, what runs before and after a run) and `src/config/roles.ts`.
 - **Examples:** an API spec (`GET /products/search`, 5 tests) and a UI spec (product search, 5 tests), each with its scenario file, plus the client, service, page object, component and precondition fixture they use.
-- **Scenarios and bugs:** YAML files with JSON schemas; `npm run validate:scenarios` checks the scenario and bug files, the IDs, and that every spec matches its scenarios; `npm run check:step-titles` checks the step titles of a run.
+- **Scenarios and bugs:** YAML files in the formats of [`@simpright/scenarios`](https://github.com/Zaytsman/SimpRightKit/tree/main/packages/scenarios), one of the [SimpRight Kit](https://github.com/Zaytsman/SimpRightKit)'s npm packages: `npm run validate:scenarios` checks the scenario and bug files, the IDs, and that every spec matches its scenarios; `npm run check:step-titles` checks the step titles of a run.
+- **The project check:** `npm run doctor` (the kit's `simpright` package) checks `simpright.yml` and its paths, the workflows' Node version, what the core files import, and that the core files equal the template's at the version `simpright.yml` records.
 - **The page inspector:** `npm run inspect:ui -- <path>` prints a page's `data-test` elements and accessibility tree, read-only, for writing page objects and scenarios.
-- **CI:** `verify` (typecheck and the validator) and `Tests` (both projects, the report kept as an artifact) on pull requests and pushes to `main`; Dependabot; every action pinned to a commit SHA.
+- **CI:** `verify` (typecheck, the validator and `doctor`) and `Tests` (both projects, the report kept as an artifact) on pull requests and pushes to `main`; Dependabot; every action pinned to a commit SHA.
 
 ## A scenario and its test
 
@@ -78,11 +79,11 @@ src/
   utils/           assertion helpers, HTTP checks, env placeholders
   globalSetup.ts
 tests/             api/<area>/*.spec.ts, ui/<area>/*.spec.ts
-test-scenarios/    api/<area>/*.yml, ui/<area>/*.yml, and the schema
-bugs/              <ID>.yml, and the schema
-scripts/           the validator, the step-title check, the page inspector
+test-scenarios/    api/<area>/*.yml, ui/<area>/*.yml
+bugs/              <ID>.yml (README.md shows the format)
+scripts/           the page inspector
 docs/framework/    conventions.md (the rules) and an index of the longer docs
-simpright.yml      the project config the scripts read (tests never do)
+simpright.yml      the project config the kit's commands and the agents read (tests never do)
 ```
 
 ## Commands
@@ -96,15 +97,16 @@ npx playwright test -g "UI-001:"  # one test by scenario ID
 npm run typecheck                 # tsc --noEmit
 npm run validate:scenarios        # scenario and bug files, IDs and specs
 npm run check:step-titles         # step titles vs scenario steps, from a JSON report
+npm run doctor                    # simpright.yml, the core's imports, the core vs the template (reads GitHub)
 npm run inspect:ui -- / --logged-out   # the page inspector
 npm run report                    # open the last HTML report
 ```
 
 ## Versions
 
-The template is versioned with git tags, starting at `v0.1.0`; `template` in `simpright.yml` records the version your core files came from. SimpRight is built on it: a check there fails when its core files differ from the template's.
+The template is versioned with git tags, starting at `v0.1.0`; `template` in `simpright.yml` records the version your core files came from, and `npm run doctor` compares them with that version's (it reads them from GitHub). The template's own `verify` runs it with `--offline`, because the template is its own reference. SimpRight is built on it: its `doctor` fails when its core files differ from the template's.
 
-More is planned as optional parts: a portal on GitHub Pages with the run history, test cases and bugs; CI publishing; and Claude Code agents that write contracts, scenarios and specs. [SimpRight](https://github.com/Zaytsman/SimpRight) shows all of them working today.
+The scenario validator and its schemas come from the kit's npm packages, which move together: one Dependabot group bumps them. More is planned as optional parts: the portal on GitHub Pages with the run history, test cases and bugs (already the kit's `@simpright/portal`, which SimpRight uses); CI publishing; and Claude Code agents that write contracts, scenarios and specs. [SimpRight](https://github.com/Zaytsman/SimpRight) shows all of them working today.
 
 ## License
 
