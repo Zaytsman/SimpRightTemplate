@@ -1,6 +1,6 @@
 {
   "name": "simpright-template",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "description": "A TypeScript + Playwright framework for UI and API tests, with YAML scenarios checked by a validator",
   "license": "MIT",
