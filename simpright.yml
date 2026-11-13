@@ -5,7 +5,7 @@
 # It holds facts and pointers, not conventions: those stay in the files listed under project.conventions, and the
 # exemplars show the style to copy.
 
-template: v0.2.1                            # the SimpRightTemplate version the core files (core.files) came from; npm run doctor compares them
+template: v0.3.0                            # the SimpRightTemplate version the core files (core.files) came from; npm run doctor compares them
 
 project:
   language: typescript
@@ -59,65 +59,67 @@ ids:
 # guest is a logged-out visitor: test.use({ authMode: 'none' }).
 roles: [default, guest]
 
-api:
-  exemplars:
-    client: src/api/clients/ProductsClient.ts
-    service: src/api/services/ProductsService.ts
-    dto: src/api/dto/product.ts
-    fixtures: src/api/fixtures/fixtures.ts  # new clients and services are registered here
-    spec: tests/api/products/get-products-search.spec.ts
-    helpers: src/utils/assertHelpers.ts     # assertMessage, attachJson, redact
-    checks: src/utils/apiChecks.ts          # the app's checks, plus src/utils/httpChecks.ts re-exported (parseJson, expectStatus, expectStatusAndBody, expectSomeItems, ...)
-    steps: src/api/fixtures/apiSteps.ts     # the app's step helpers, plus src/api/fixtures/sendSteps.ts re-exported (sendAndAttach, checkStatusAndMessage)
-    cleanup: src/fixtures/base.ts           # the cleanup fixture
-    constants: src/data/TestConstants.ts    # shared seeded values
-    testDataUtils: src/data/factories/testDataUtils.ts   # uniqueName for created records
-  # Known-issue line of a test whose scenario has knownIssue and bug, right before its first test.step (after any setup,
-  # so a failed setup stays a real failure); Playwright records it as a 'fail' annotation.
-  knownIssue: "test.fail(true, 'Known issue {bug}: {text}');"
-  rules:
-    - Happy paths go through a service; any step that checks a status code goes through the client.
-    - Specs import from @fixtures and never construct clients or services.
-    - Every assertion passes assertMessage({ request, expected, actual }); a bare expect without a message is forbidden.
-    - Payloads are attached with attachJson, never test.info().attach, so secrets are masked (reports can be published).
-    - Compare secret values (a test user's email) as a condition, e.g. expect(a === b, message).toBe(true), so a failure diff doesn't print them.
-    - Records a test creates are removed through the cleanup fixture (cleanup.add), not afterAll.
-    - Reuse the shared checks (api.exemplars.checks), the step helpers (api.exemplars.steps) and the area's src/api/fixtures/<area>Steps.ts, and parse bodies with parseJson; a spec never redefines them. Tests that differ only in their data share one template function, called from a literal test() per scenario.
-    - Seeded values more than one test relies on go in TestConstants; a value one test uses stays a variable in that test.
-    - Create/update payloads come from a factory per area (src/data/factories/<Area>Factory.ts, created with the first scenario that needs it), with uniqueName for every created record.
+# The QA agents' facts, read by the kit's simpright-qa plugin when parts.agents is on (it's off here).
+agents:
+  api:
+    exemplars:
+      client: src/api/clients/ProductsClient.ts
+      service: src/api/services/ProductsService.ts
+      dto: src/api/dto/product.ts
+      fixtures: src/api/fixtures/fixtures.ts  # new clients and services are registered here
+      spec: tests/api/products/get-products-search.spec.ts
+      helpers: src/utils/assertHelpers.ts     # assertMessage, attachJson, redact
+      checks: src/utils/apiChecks.ts          # the app's checks, plus src/utils/httpChecks.ts re-exported (parseJson, expectStatus, expectStatusAndBody, expectSomeItems, ...)
+      steps: src/api/fixtures/apiSteps.ts     # the app's step helpers, plus src/api/fixtures/sendSteps.ts re-exported (sendAndAttach, checkStatusAndMessage)
+      cleanup: src/fixtures/base.ts           # the cleanup fixture
+      constants: src/data/TestConstants.ts    # shared seeded values
+      testDataUtils: src/data/factories/testDataUtils.ts   # uniqueName for created records
+    # Known-issue line of a test whose scenario has knownIssue and bug, right before its first test.step (after any setup,
+    # so a failed setup stays a real failure); Playwright records it as a 'fail' annotation.
+    knownIssue: "test.fail(true, 'Known issue {bug}: {text}');"
+    rules:
+      - Happy paths go through a service; any step that checks a status code goes through the client.
+      - Specs import from @fixtures and never construct clients or services.
+      - Every assertion passes assertMessage({ request, expected, actual }); a bare expect without a message is forbidden.
+      - Payloads are attached with attachJson, never test.info().attach, so secrets are masked (reports can be published).
+      - Compare secret values (a test user's email) as a condition, e.g. expect(a === b, message).toBe(true), so a failure diff doesn't print them.
+      - Records a test creates are removed through the cleanup fixture (cleanup.add), not afterAll.
+      - Reuse the shared checks (agents.api.exemplars.checks), the step helpers (agents.api.exemplars.steps) and the area's src/api/fixtures/<area>Steps.ts, and parse bodies with parseJson; a spec never redefines them. Tests that differ only in their data share one template function, called from a literal test() per scenario.
+      - Seeded values more than one test relies on go in TestConstants; a value one test uses stays a variable in that test.
+      - Create/update payloads come from a factory per area (src/data/factories/<Area>Factory.ts, created with the first scenario that needs it), with uniqueName for every created record.
 
-ui:
-  exemplars:
-    page: src/ui/pages/HomePage.ts
-    basePage: src/ui/pages/AppPage.ts      # pages extend this, the app's base page; it extends the core BasePage
-    component: src/ui/pages/components/ProductGrid.ts
-    baseComponent: src/ui/pages/components/BaseComponent.ts   # components extend this; locators start from root
-    dialog: src/ui/pages/dialogs/BaseDialog.ts   # no concrete dialog yet: subclasses extend this
-    fixtures: src/ui/fixtures/fixtures.ts   # new pages, components, dialogs and flows are registered here
-    preconditionFixture: src/ui/fixtures/preconditions/openHomePageTest.ts
-    fixturesIndex: src/fixtures/index.ts    # precondition fixtures are exported here
-    spec: tests/ui/products/product-search.spec.ts
-    constants: src/data/TestConstants.ts
-  # Known-issue line of a test whose scenario has knownIssue and bug, placed like the API one (the same annotation).
-  knownIssue: "test.fail(true, 'Known issue {bug}: {text}');"
-  rules:
-    - Specs import from @fixtures and get pages, components, flows and API services from fixtures; they never construct them, call page.goto or use selectors.
-    - Page object locators are private readonly fields named with the element kind (searchCaptionText); a test reaches one only through a noun getter (get searchCaption()), added when a test asserts on it. Dynamic locators are methods with parameters (card(name)).
-    - Locator priority is getByTestId (data-test), then getByRole, getByLabel or getByText, then CSS; never XPath. Take data-test ids and labels from commands.inspectUi, never guess them.
-    - No assertions in page objects. An action waits for the app's own signal (a marker, a toast, the next page's element, or its request through waitForApiResponse), never a fixed sleep.
-    - Every new page object, dialog and flow, and every component used outside a page, is registered as a fixture in ui.exemplars.fixtures; a component a page holds is reached through that page's field (homePage.productGrid).
-    - A scenario's preconditions are set up before the first step, never in a test.step; a precondition fixture (open<Page>Test, no test.step inside) when tests share one, imported as test so the validator finds the titles; otherwise setup code with a // Precondition comment.
-    - Every assertion carries a plain-text message saying what is checked.
-    - Data a UI test needs (a user, a record) is prepared and removed through the API (setup helpers in src/ui/fixtures/, cleanup.add), never through the UI and never in a test.step; a setup failure throws an error starting with Setup:.
-    - UI suite tags are @<area> (@products); API tags are @<area>-api.
-    - The inspector is read-only; its steps click tabs, menus and links, check filters and pick list options, never type or submit.
+  ui:
+    exemplars:
+      page: src/ui/pages/HomePage.ts
+      basePage: src/ui/pages/AppPage.ts      # pages extend this, the app's base page; it extends the core BasePage
+      component: src/ui/pages/components/ProductGrid.ts
+      baseComponent: src/ui/pages/components/BaseComponent.ts   # components extend this; locators start from root
+      dialog: src/ui/pages/dialogs/BaseDialog.ts   # no concrete dialog yet: subclasses extend this
+      fixtures: src/ui/fixtures/fixtures.ts   # new pages, components, dialogs and flows are registered here
+      preconditionFixture: src/ui/fixtures/preconditions/openHomePageTest.ts
+      fixturesIndex: src/fixtures/index.ts    # precondition fixtures are exported here
+      spec: tests/ui/products/product-search.spec.ts
+      constants: src/data/TestConstants.ts
+    # Known-issue line of a test whose scenario has knownIssue and bug, placed like the API one (the same annotation).
+    knownIssue: "test.fail(true, 'Known issue {bug}: {text}');"
+    rules:
+      - Specs import from @fixtures and get pages, components, flows and API services from fixtures; they never construct them, call page.goto or use selectors.
+      - Page object locators are private readonly fields named with the element kind (searchCaptionText); a test reaches one only through a noun getter (get searchCaption()), added when a test asserts on it. Dynamic locators are methods with parameters (card(name)).
+      - Locator priority is getByTestId (data-test), then getByRole, getByLabel or getByText, then CSS; never XPath. Take data-test ids and labels from commands.inspectUi, never guess them.
+      - No assertions in page objects. An action waits for the app's own signal (a marker, a toast, the next page's element, or its request through waitForApiResponse), never a fixed sleep.
+      - Every new page object, dialog and flow, and every component used outside a page, is registered as a fixture in agents.ui.exemplars.fixtures; a component a page holds is reached through that page's field (homePage.productGrid).
+      - A scenario's preconditions are set up before the first step, never in a test.step; a precondition fixture (open<Page>Test, no test.step inside) when tests share one, imported as test so the validator finds the titles; otherwise setup code with a // Precondition comment.
+      - Every assertion carries a plain-text message saying what is checked.
+      - Data a UI test needs (a user, a record) is prepared and removed through the API (setup helpers in src/ui/fixtures/, cleanup.add), never through the UI and never in a test.step; a setup failure throws an error starting with Setup:.
+      - UI suite tags are @<area> (@products); API tags are @<area>-api.
+      - The inspector is read-only; its steps click tabs, menus and links, check filters and pick list options, never type or submit.
 
-liveApi:
-  # Applies to UI tests too: a UI test that changes data (an order, a registration, a profile change) is a write.
-  writes: ask                               # never | ask | allowed
-  # Known ways the live app misbehaves for a while; add what you learn about yours.
-  transient:
-    - The Toolshop demo site re-seeds every hour at :00 UTC. For a minute or two, calls can fail with 500, and records get new ids.
+  liveApi:
+    # Applies to UI tests too: a UI test that changes data (an order, a registration, a profile change) is a write.
+    writes: ask                               # never | ask | allowed
+    # Known ways the live app misbehaves for a while; add what you learn about yours.
+    transient:
+      - The Toolshop demo site re-seeds every hour at :00 UTC. For a minute or two, calls can fail with 500, and records get new ids.
 
 # The framework's optional parts and whether this project uses them.
 parts:
