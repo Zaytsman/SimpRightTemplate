@@ -1,0 +1,27 @@
+{
+  "kit": "0.4.0",
+  "files": {
+    ".claude/simpright/github.md": "sha256-6736cf6a7fc1f9a5e063e144999946e5cf9b3d924c3b4273f81c47ece270c0df",
+    ".claude/simpright/how-to-ask.md": "sha256-35e0ecd97476917bccdbb26bce8fc4887d1c67f4ad6420c5f1185f34e655d990",
+    ".claude/simpright/README.md": "sha256-bbeff92b9c8052d45b0e34fc1785b7bf3532eb0889cbf5b05f7af4f070c8b826",
+    ".claude/skills/simpright-doctor/SKILL.md": "sha256-50339e86b69deb0b836284b2563d27dbed31daa5fde0384db9c4cd9fc76e26d6",
+    ".claude/skills/simpright-setup/references/interview.md": "sha256-183855eeb3142983e9de36a805c1a330a6f692161b7677a82709d7f47f638a8e",
+    ".claude/skills/simpright-setup/references/login.md": "sha256-da4f6d2bdc5bbe71a10f9a8d90c5b17a118a5a003304920f38b102dfa37137b8",
+    ".claude/skills/simpright-setup/references/parts.md": "sha256-c6432c7e2d07e795915b97ce6b58daa3112d0e13e721f214bb21d9c99f158fba",
+    ".claude/skills/simpright-setup/references/project-docs.md": "sha256-e34921afd261de128df429e18d40fbfeea71f40b55c212d8b50ae1a5d64cfc39",
+    ".claude/skills/simpright-setup/SKILL.md": "sha256-8eddea87f51f0c1ae3dd0b59d3a8a50ef2c2d03f59c93e8af6abe4a08620d51b"
+  },
+  "packageJson": {
+    "devDependencies": {
+      "@simpright/scenarios": "0.4.0",
+      "simpright": "0.4.0"
+    },
+    "scripts": {
+      "apply": "simpright apply",
+      "check:step-titles": "simpright-scenarios check-step-titles",
+      "doctor": "simpright doctor",
+      "inspect:ui": "node scripts/inspect-ui.mts",
+      "validate:scenarios": "simpright-scenarios validate"
+    }
+  }
+}

@@ -10,7 +10,7 @@ The framework's conventions, which the sections below add to:
 ## Project
 
 <!-- Replace this section with what your project tests. -->
-Created from [SimpRightTemplate](https://github.com/Zaytsman/SimpRightTemplate) (`template` in `simpright.yml`): a TypeScript + Playwright framework for UI and API tests, with YAML scenarios checked by a validator. Its examples test the Toolshop demo app, logged out; replace them with your own.
+Created from [SimpRightTemplate](https://github.com/Zaytsman/SimpRightTemplate) (`template` in `simpright.yml`): a TypeScript + Playwright framework for UI and API tests, with YAML scenarios checked by a validator. Its examples test the Toolshop demo app, logged out; replace them with your own. `/simpright-setup` sets the project up for your app and rewrites this file.
 
 ## Commands
 
@@ -25,12 +25,13 @@ npx playwright test -g "UI-001:"  # one test by scenario ID
 npm run typecheck                 # tsc --noEmit (unused locals and parameters fail it)
 npm run validate:scenarios        # scenario and bug files, IDs and specs; prints the next free IDs
 npm run check:step-titles         # step titles vs scenario steps, from a JSON report (default test-results/results.json)
-npm run doctor                    # simpright.yml and its paths, the core's imports, the core vs SimpRightTemplate (reads GitHub)
+npm run doctor                    # simpright.yml and its parts, the core's imports, apply's files, the core vs SimpRightTemplate (reads GitHub)
+npm run apply -- --dry-run        # what the parts in simpright.yml need; without --dry-run, written
 npm run inspect:ui -- / --logged-out   # page inspector: data-test elements + accessibility tree
 npm run report                    # open the last HTML report
 ```
 
-`validate:scenarios`, `check:step-titles` and `doctor` come from the [SimpRight Kit](https://github.com/Zaytsman/SimpRightKit)'s npm packages (`@simpright/scenarios`, `simpright`; devDependencies pinned to one version and bumped together), and so do the scenario and bug schemas (`paths.scenarioSchema`, `paths.bugSchema`).
+`validate:scenarios`, `check:step-titles`, `doctor` and `apply` come from the [SimpRight Kit](https://github.com/Zaytsman/SimpRightKit)'s npm packages (`@simpright/scenarios`, `simpright`; devDependencies pinned to one version and bumped together), and so do the scenario and bug schemas (`paths.scenarioSchema`, `paths.bugSchema`). `apply` also writes the kit's Claude Code skills into `.claude/` (`/simpright-setup`, `/simpright-doctor`; the QA agents with `parts.agents`) and records them in `.simpright/state.json`: never edit them by hand.
 
 ## The app under test
 

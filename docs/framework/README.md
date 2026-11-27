@@ -17,4 +17,4 @@ from, for now. They describe SimpRight's own tests, but what they say about the 
 | [09 Scenarios and bugs](https://github.com/Zaytsman/SimpRight/blob/main/docs/framework/09-scenarios-and-bugs.md) | Scenario files, bug files, `simpright.yml`, the validator and the project check (`doctor`), the step-title check, the smoke set |
 | [10 Reporting and secrets](https://github.com/Zaytsman/SimpRight/blob/main/docs/framework/10-reporting-and-secrets.md) | Reporters, attachments, assertion messages, masking, what never reaches a report |
 
-SimpRight's other docs cover parts this template doesn't have yet: CI publishing and the portal, and the AI agents.
+SimpRight's other docs cover the kit's parts that the template leaves off until `/simpright-setup` turns them on: [11 CI and publishing](https://github.com/Zaytsman/SimpRight/blob/main/docs/framework/11-ci-and-publishing.md) (the workflows and the portal on GitHub Pages) and [12 AI agents](https://github.com/Zaytsman/SimpRight/blob/main/docs/framework/12-ai-agents.md).

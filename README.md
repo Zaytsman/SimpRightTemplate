@@ -15,7 +15,8 @@ The examples test the [Toolshop demo app](https://practicesoftwaretesting.com) l
    npm test
    ```
 
-`npm test` runs both Playwright projects: `api` (no browser) and `ui` (Chromium; a visible browser locally, headless on CI).
+   `npm test` runs both Playwright projects: `api` (no browser) and `ui` (Chromium; a visible browser locally, headless on CI).
+3. Set it up for your app with [Claude Code](https://claude.com/claude-code): open the folder in the Claude desktop app, or run `claude` in it, and type `/simpright-setup`. It asks about your app, the layers you test, the login, the parts you want and your GitHub repository, then runs `simpright init` and `simpright apply`, each after you've seen its changes. The skill is in `.claude/`, so there's nothing to install and no folder to trust.
 
 ## What you get
 
@@ -23,9 +24,10 @@ The examples test the [Toolshop demo app](https://practicesoftwaretesting.com) l
 - **Two seams for your app:** `src/config/project.ts` (the test-id attribute, the login, what runs before and after a run) and `src/config/roles.ts`.
 - **Examples:** an API spec (`GET /products/search`, 5 tests) and a UI spec (product search, 5 tests), each with its scenario file, plus the client, service, page object, component and precondition fixture they use.
 - **Scenarios and bugs:** YAML files in the formats of [`@simpright/scenarios`](https://github.com/Zaytsman/SimpRightKit/tree/main/packages/scenarios), one of the [SimpRight Kit](https://github.com/Zaytsman/SimpRightKit)'s npm packages: `npm run validate:scenarios` checks the scenario and bug files, the IDs, and that every spec matches its scenarios; `npm run check:step-titles` checks the step titles of a run.
-- **The project check:** `npm run doctor` (the kit's `simpright` package) checks `simpright.yml` and its paths, the workflows' Node version, what the core files import, and that the core files equal the template's at the version `simpright.yml` records.
+- **The setup:** `/simpright-setup` and `/simpright-doctor`, Claude Code skills from the kit's setup plugin. The setup interviews you and runs the kit's commands at your OK; the doctor explains what `npm run doctor` finds and checks the GitHub settings the parts need.
+- **The project check:** `npm run doctor` (the kit's `simpright` package) checks `simpright.yml` and how its parts fit together, the workflows' Node version, what the core files import, the files `npm run apply` writes, and that the core files equal the template's at the version `simpright.yml` records. `npm run apply` writes what the parts in `simpright.yml` need: here the setup's skills, and with more parts the CI workflows, the QA agents and the kit's packages.
 - **The page inspector:** `npm run inspect:ui -- <path>` prints a page's `data-test` elements and accessibility tree, read-only, for writing page objects and scenarios.
-- **CI:** `verify` (typecheck, the validator and `doctor`) and `Tests` (both projects, the report kept as an artifact) on pull requests and pushes to `main`; Dependabot; every action pinned to a commit SHA.
+- **CI:** `verify` (typecheck, the validator and `doctor`) and `Tests` (both projects, the report kept as an artifact) on pull requests and pushes to `main`; Dependabot; every action pinned to a commit SHA. The kit's CI part replaces them when you turn it on: generated workflows with scheduled runs and the portal on GitHub Pages.
 
 ## A scenario and its test
 
@@ -59,6 +61,8 @@ test('UI-001: Search by name shows only matching products', { tag: '@smoke' }, a
 
 ## Point it at your app
 
+`/simpright-setup` does this with you. By hand:
+
 1. **URLs and timeouts:** `src/envs/TEST.json`; more environments as `src/envs/<NAME>.json`, picked with `TEST_ENV`. Secrets go in `.env` (copy `.env.example`) and reach the env file as `${VAR}` placeholders.
 2. **Test ids and login:** `src/config/project.ts`. Set your app's test-id attribute, and `login` and `browserState` once tests log in. [SimpRight's project file](https://github.com/Zaytsman/SimpRight/blob/main/src/config/project.ts) is a full example: an API login, a UI login and a user created for each run.
 3. **Roles and users:** `src/config/roles.ts`, `roles` in `simpright.yml`, and `testUsers` in the env file.
@@ -83,6 +87,8 @@ test-scenarios/    api/<area>/*.yml, ui/<area>/*.yml
 bugs/              <ID>.yml (README.md shows the format)
 scripts/           the page inspector
 docs/framework/    conventions.md (the rules) and an index of the longer docs
+.claude/           the kit's Claude Code skills (and its agents, with the agents part), written by npm run apply
+.simpright/        state.json: what npm run apply wrote
 simpright.yml      the project config the kit's commands and the agents read (tests never do)
 ```
 
@@ -98,6 +104,7 @@ npm run typecheck                 # tsc --noEmit
 npm run validate:scenarios        # scenario and bug files, IDs and specs
 npm run check:step-titles         # step titles vs scenario steps, from a JSON report
 npm run doctor                    # simpright.yml, the core's imports, the core vs the template (reads GitHub)
+npm run apply -- --dry-run        # what simpright.yml's parts need; without --dry-run, written
 npm run inspect:ui -- / --logged-out   # the page inspector
 npm run report                    # open the last HTML report
 ```
@@ -106,7 +113,7 @@ npm run report                    # open the last HTML report
 
 The template is versioned with git tags, starting at `v0.1.0`; `template` in `simpright.yml` records the version your core files came from, and `npm run doctor` compares them with that version's (it reads them from GitHub). The template's own `verify` runs it with `--offline`, because the template is its own reference. SimpRight is built on it: its `doctor` fails when its core files differ from the template's.
 
-The scenario validator and its schemas come from the kit's npm packages, which move together: one Dependabot group bumps them. More is planned as optional parts: the portal on GitHub Pages with the run history, test cases and bugs (already the kit's `@simpright/portal`, which SimpRight uses); CI publishing; and Claude Code agents that write contracts, scenarios and specs. [SimpRight](https://github.com/Zaytsman/SimpRight) shows all of them working today.
+The scenario validator and its schemas, `doctor` and `apply` come from the kit's npm packages, which move together: one Dependabot group bumps them, and after a kit upgrade `npm run apply` brings the skills and workflows it writes up to date. The kit's other parts are off in the template, and `/simpright-setup` turns on the ones you want: CI that runs the tests on a schedule and publishes them to the portal on GitHub Pages (the run history, test cases and bugs), a wiki, and the QA agents that write contracts, scenarios and specs. [SimpRight](https://github.com/Zaytsman/SimpRight) shows all of them working.
 
 ## License
 
